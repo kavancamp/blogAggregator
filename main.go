@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 
@@ -18,7 +17,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to read config: %v", err)
 	}
-	fmt.Printf("Read config: %+v\n", cfg)
+	//fmt.Printf("Read config: %+v\n", cfg)
 	
 	db, err := sql.Open("postgres", cfg.DBURL)
 	if err != nil {
@@ -44,14 +43,6 @@ func main() {
 			log.Fatal(err)
 		}
 	
-	// rss, err := FetchFeed(context.Background(), "https://xkcd.com/rss.xml")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// for _, item := range rss.Items {
-	// 	fmt.Println(item.Title)
-	// }
-
 
 }
 	
