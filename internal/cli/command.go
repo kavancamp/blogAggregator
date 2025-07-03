@@ -2,12 +2,14 @@ package cli
 
 import (
 	"fmt"
-
+	_ "github.com/lib/pq"
 	"github.com/kavancamp/blogAggregator/internal/config"
+	"github.com/kavancamp/blogAggregator/internal/database"
 )
 
 type State struct {
     Config *config.Config //access config and eventually DB through State
+	DB     *database.Queries // from SQLC
 }
 
 type Command struct {
