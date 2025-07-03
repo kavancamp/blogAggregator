@@ -1,34 +1,34 @@
-package utils
+package feeds
 
 import (
-	"time"
-	"encoding/xml"
 	"context"
+	"encoding/xml"
 	"fmt"
+	"html"
 	"io"
 	"net/http"
+	"time"
 )
-type RSSFeed struct {
-	Channel struct {
-		Title string `xml:"title"`
-		Items []Item `xml:"item"`
-	} `xml:"channel"`
-}
 
 type Item struct {
 	Title       string `xml:"title"`
-	Link        string `xml:"link"`
 	Description string `xml:"description"`
+	Link        string `xml:"link"`
 	PubDate     string `xml:"pubDate"`
 }
 
-func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
-		//fetch feed from given url 
+type RSSFeed struct {
+	Title       string `xml:"channel>title"`
+	Description string `xml:"channel>description"`
+	Items       []Item `xml:"channel>item"`
+}
+
+func FetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, "GET", feedURL, nil)
-	if err != nil{
+	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 	req.Header.Set("User-Agent", "gator")
@@ -38,8 +38,7 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 		return nil, fmt.Errorf("error making request: %w", err)
 	}
 	defer resp.Body.Close()
-	
-	//read and parse
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error reading response body: %w", err)
@@ -47,13 +46,15 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 
 	var parsed RSSFeed
 	if err := xml.Unmarshal(body, &parsed); err != nil {
-		return nil, fmt.Errorf("error unmarshaling response %w", feedURL)
+		return nil, fmt.Errorf("error unmarshaling response: %w", err)
 	}
 
-	if len(parsed.Channel.Items) == 0 {
-		return nil, fmt.Errorf("retreiving data at %s", feedURL)
+	parsed.Title = html.UnescapeString(parsed.Title)
+	parsed.Description = html.UnescapeString(parsed.Description)
+	for i := range parsed.Items {
+		parsed.Items[i].Title = html.UnescapeString(parsed.Items[i].Title)
+		parsed.Items[i].Description = html.UnescapeString(parsed.Items[i].Description)
 	}
 
-	//return filled-out rssfeed struct
-	return &parsed, nil 
+	return &parsed, nil
 }
