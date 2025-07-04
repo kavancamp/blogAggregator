@@ -46,5 +46,20 @@ func addFeedHandler(state *State, cmd Command) error {
 	}
 
 	fmt.Printf("Feed created:\nID: %s\nName: %s\nURL: %s\nUserID: %s\n", feed.ID, feed.Name, feed.Url, feed.UserID)
+	
+	followParams := database.CreateFeedFollowParams{
+		ID: uuid.New(),
+		CreatedAt: now,
+		UpdatedAt: now,
+		UserID: user.ID,
+		FeedID: feed.ID,
+	}
+
+	_, err = state.DB.CreateFeedFollow(context.Background(), followParams)
+	if err != nil {
+		fmt.Printf("warning: failed to aut-follow feed: %v\n", err)
+	} else {
+		fmt.Printf("Automatically followed '%s'\n", feed.Name)
+	}
 	return nil
 }
