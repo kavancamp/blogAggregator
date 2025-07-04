@@ -16,7 +16,8 @@
 coverage.*
 *.coverprofile
 profile.cov
-
+*.test
+blogAggregator
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
