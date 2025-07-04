@@ -9,31 +9,34 @@ import (
 	"net/http"
 	"time"
 )
-
-type Item struct {
+type RSSFeed struct {
+	Channel struct {
 	Title       string `xml:"title"`
+	Link        string  `xml:"link"`
 	Description string `xml:"description"`
+	Item       []RSSItem `xml:"item"`
+	}`xml:"channel"`
+}
+type RSSItem struct {
+	Title       string `xml:"title"`
 	Link        string `xml:"link"`
+	Description string `xml:"description"`
 	PubDate     string `xml:"pubDate"`
 }
 
-type RSSFeed struct {
-	Title       string `xml:"channel>title"`
-	Description string `xml:"channel>description"`
-	Items       []Item `xml:"channel>item"`
-}
-
 func FetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
+	httpClient := http.Client{
+		Timeout: 10 * time.Second,
+	}
 
 	req, err := http.NewRequestWithContext(ctx, "GET", feedURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
+
 	req.Header.Set("User-Agent", "gator")
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error making request: %w", err)
 	}
@@ -49,11 +52,12 @@ func FetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 		return nil, fmt.Errorf("error unmarshaling response: %w", err)
 	}
 
-	parsed.Title = html.UnescapeString(parsed.Title)
-	parsed.Description = html.UnescapeString(parsed.Description)
-	for i := range parsed.Items {
-		parsed.Items[i].Title = html.UnescapeString(parsed.Items[i].Title)
-		parsed.Items[i].Description = html.UnescapeString(parsed.Items[i].Description)
+	parsed.Channel.Title = html.UnescapeString(parsed.Channel.Title)
+	parsed.Channel.Description = html.UnescapeString(parsed.Channel.Description)
+	for i, item := range parsed.Channel.Item {
+		item.Title = html.UnescapeString(item.Title)
+		item.Description = html.UnescapeString(item.Description)
+		parsed.Channel.Item[i] = item
 	}
 
 	return &parsed, nil
