@@ -19,3 +19,13 @@ func getCurrentUser(state *State) (*database.User, error) {
 	}
 	return &user, nil
 }
+
+func middlewareLoggedIn(handler func(s *State, cmd Command, user database.User) error) func(*State, Command) error {
+	return func(s *State, cmd Command) error {
+		user, err := getCurrentUser(s)
+		if err != nil {
+			return fmt.Errorf("must be logged in to use this command")
+		}
+		return handler(s, cmd, *user)
+	}
+}

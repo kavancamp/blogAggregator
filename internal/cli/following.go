@@ -3,18 +3,15 @@ package cli
 import (
 	"context"
 	"fmt"
+
+	"github.com/kavancamp/blogAggregator/internal/database"
 )
 
 func init() {
-	RegisterCommand("following", followingHandler)
+	RegisterCommand("following", middlewareLoggedIn(followingHandler))
 }
 
-func followingHandler(state *State, cmd Command) error {
-	user, err := getCurrentUser(state)
-	if err != nil {
-		return err
-	}
-
+func followingHandler(state *State, cmd Command, user database.User) error {
 	feedFollows, err := state.DB.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
 		return fmt.Errorf("failed to get feed follows: %w", err)

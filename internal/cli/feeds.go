@@ -3,13 +3,13 @@ package cli
 import (
 	"context"
 	"fmt"
-	
+	"github.com/kavancamp/blogAggregator/internal/database"
 )
 
 func init() {
-	RegisterCommand("feeds", feedsHandler)
+	RegisterCommand("feeds", middlewareLoggedIn(feedsHandler))
 }
-func feedsHandler(state *State, cmd Command) error {
+func feedsHandler(state *State, cmd Command, user database.User) error {
 	if len(cmd.Args) != 0 {
 		return fmt.Errorf("usage: gator feeds")
 	}

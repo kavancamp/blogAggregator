@@ -3,13 +3,15 @@ package cli
 import (
 	"context"
 	"fmt"
+
+	"github.com/kavancamp/blogAggregator/internal/database"
 )
 
 func init() {
-	RegisterCommand("users", usersHandler)
+	RegisterCommand("users", middlewareLoggedIn(usersHandler))
 }
 
-func usersHandler(state *State, cmd Command) error {
+func usersHandler(state *State, cmd Command, user database.User) error {
 	users, err := state.DB.GetUsers(context.Background())
 	if err != nil {
 		return fmt.Errorf("failed to get users: %w", err)

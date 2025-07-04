@@ -4,16 +4,15 @@ import (
 	"context"
 	"fmt"
 	"time"
-
 	"github.com/google/uuid"
 	"github.com/kavancamp/blogAggregator/internal/database"
 )
 
 func init() {
-	RegisterCommand("addfeed", addFeedHandler)
+	RegisterCommand("addfeed", middlewareLoggedIn(addFeedHandler))
 }
 
-func addFeedHandler(state *State, cmd Command) error {
+func addFeedHandler(state *State, cmd Command, user database.User) error {
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("usage: gator addfeed <name> <url>")
 	}

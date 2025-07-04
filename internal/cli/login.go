@@ -4,13 +4,15 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
+	"github.com/kavancamp/blogAggregator/internal/database"
 )
 
 func init() {
-	RegisterCommand("login", loginHandler)
+	RegisterCommand("login", middlewareLoggedIn(loginHandler))
 }
 
-func loginHandler(state *State, cmd Command) error {
+func loginHandler(state *State, cmd Command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: gator login <username>")
 	}

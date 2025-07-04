@@ -10,19 +10,15 @@ import (
 )
 
 func init() {
-	RegisterCommand("follow", followHandler)
+	RegisterCommand("follow", middlewareLoggedIn(followHandler))
 }
 
-func followHandler(state *State, cmd Command) error {
+func followHandler(state *State, cmd Command, user database.User) error {
 	//It takes a single url argument and creates a new feed follow record for the current user. 
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: gator follow <feed_url>")
 	}
 	feedURL := cmd.Args[0]
-	user, err := getCurrentUser(state)
-	if err != nil {
-		return err
-	}
 	
 	feed, err := state.DB.GetFeedByURL(context.Background(), feedURL)
 	if err != nil {
