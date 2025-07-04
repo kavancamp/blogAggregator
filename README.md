@@ -1,4 +1,4 @@
-# 📰 Blog Aggregator
+# 📰 gator Blog Aggregator
 ** in progress **
 
 A command-line application built in Go that allows users to register, log in, and aggregate blog content from various sources. Designed as a backend-focused project to demonstrate database interaction, CLI command routing, and type-safe SQL with [`sqlc`](https://github.com/sqlc-dev/sqlc).
