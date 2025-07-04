@@ -11,13 +11,13 @@ func init() {
 	RegisterCommand("users", middlewareLoggedIn(usersHandler))
 }
 
-func usersHandler(state *State, cmd Command, user database.User) error {
-	users, err := state.DB.GetUsers(context.Background())
+func usersHandler(s *State, cmd Command, user database.User) error {
+	users, err := s.DB.GetUsers(context.Background())
 	if err != nil {
 		return fmt.Errorf("failed to get users: %w", err)
 	}
 
-	current := state.Config.CurrentUserName
+	current := s.Config.CurrentUserName
 
 	for _, u := range users {
 		if u.Name == current {

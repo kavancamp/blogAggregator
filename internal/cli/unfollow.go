@@ -10,13 +10,13 @@ func init() {
 	RegisterCommand("unfollow", middlewareLoggedIn(unfollowHandler))
 }
 
-func unfollowHandler(state *State, cmd Command, user database.User) error {
+func unfollowHandler(s *State, cmd Command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: gator unfollow <feed_url>")
 	}
 	feedURL := cmd.Args[0]
 
-	err := state.DB.DeleteFeedFollowByUserAndURL(context.Background(), database.DeleteFeedFollowByUserAndURLParams{
+	err := s.DB.DeleteFeedFollowByUserAndURL(context.Background(), database.DeleteFeedFollowByUserAndURLParams{
 		UserID: user.ID,
 		Url:    feedURL,
 	})

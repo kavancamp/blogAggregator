@@ -13,14 +13,14 @@ func init() {
 	RegisterCommand("follow", middlewareLoggedIn(followHandler))
 }
 
-func followHandler(state *State, cmd Command, user database.User) error {
+func followHandler(s *State, cmd Command, user database.User) error {
 	//It takes a single url argument and creates a new feed follow record for the current user. 
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: gator follow <feed_url>")
 	}
 	feedURL := cmd.Args[0]
 	
-	feed, err := state.DB.GetFeedByURL(context.Background(), feedURL)
+	feed, err := s.DB.GetFeedByURL(context.Background(), feedURL)
 	if err != nil {
 		return fmt.Errorf("could not find feed with URL %s: %w", feedURL, err)
 	}
@@ -34,7 +34,7 @@ func followHandler(state *State, cmd Command, user database.User) error {
 		FeedID:    feed.ID,
 	}
 
-	followRecord, err := state.DB.CreateFeedFollow(context.Background(), params)
+	followRecord, err := s.DB.CreateFeedFollow(context.Background(), params)
 	if err != nil {
 		return fmt.Errorf("could not follow feed: %w", err)
 	}

@@ -12,19 +12,19 @@ func init() {
 	RegisterCommand("login", middlewareLoggedIn(loginHandler))
 }
 
-func loginHandler(state *State, cmd Command, user database.User) error {
+func loginHandler(s *State, cmd Command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: gator login <username>")
 	}
 	userName := cmd.Args[0]
-	_, err := state.DB.GetUser(context.Background(), userName)
+	_, err := s.DB.GetUser(context.Background(), userName)
 	if err == sql.ErrNoRows {
 		return fmt.Errorf("user '%s' does not exist", userName)
 	} else if err!= nil {
 		return fmt.Errorf("failed to fetch user: %w", err)
 	}
 	
-	if err := state.Config.SetUser(userName);
+	if err := s.Config.SetUser(userName);
 	err != nil {
 		return fmt.Errorf("failed to set user: %w", err)
 	}

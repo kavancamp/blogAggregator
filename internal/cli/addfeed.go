@@ -12,17 +12,17 @@ func init() {
 	RegisterCommand("addfeed", middlewareLoggedIn(addFeedHandler))
 }
 
-func addFeedHandler(state *State, cmd Command, user database.User) error {
+func addFeedHandler(s *State, cmd Command, user database.User) error {
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("usage: gator addfeed <name> <url>")
 	}
 
-	currentUserName := state.Config.CurrentUserName
+	currentUserName := s.Config.CurrentUserName
 	if currentUserName == "unknown" {
 		return fmt.Errorf("no user currently logged in")
 	}
 
-	user, err := state.DB.GetUser(context.Background(), currentUserName)
+	user, err := s.DB.GetUser(context.Background(), currentUserName)
 	if err != nil {
 		return fmt.Errorf("failed to get user: %w", err)
 	}
@@ -30,7 +30,7 @@ func addFeedHandler(state *State, cmd Command, user database.User) error {
 	id := uuid.New()
 	now := time.Now()
 
-	feed, err := state.DB.CreateFeed(context.Background(), 
+	feed, err := s.DB.CreateFeed(context.Background(), 
 		database.CreateFeedParams{
 			ID:        id,
 			CreatedAt: now,
@@ -54,7 +54,7 @@ func addFeedHandler(state *State, cmd Command, user database.User) error {
 		FeedID: feed.ID,
 	}
 
-	_, err = state.DB.CreateFeedFollow(context.Background(), followParams)
+	_, err = s.DB.CreateFeedFollow(context.Background(), followParams)
 	if err != nil {
 		fmt.Printf("warning: failed to aut-follow feed: %v\n", err)
 	} else {

@@ -9,12 +9,12 @@ import (
 func init() {
 	RegisterCommand("feeds", middlewareLoggedIn(feedsHandler))
 }
-func feedsHandler(state *State, cmd Command, user database.User) error {
+func feedsHandler(s *State, cmd Command, user database.User) error {
 	if len(cmd.Args) != 0 {
 		return fmt.Errorf("usage: gator feeds")
 	}
 
-	feeds, err := state.DB.ListFeeds(context.Background())
+	feeds, err := s.DB.ListFeeds(context.Background())
 	if err != nil {
 		return fmt.Errorf("failed to list feeds: %w", err)
 	}

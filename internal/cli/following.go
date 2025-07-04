@@ -11,8 +11,8 @@ func init() {
 	RegisterCommand("following", middlewareLoggedIn(followingHandler))
 }
 
-func followingHandler(state *State, cmd Command, user database.User) error {
-	feedFollows, err := state.DB.GetFeedFollowsForUser(context.Background(), user.ID)
+func followingHandler(s *State, cmd Command, user database.User) error {
+	feedFollows, err := s.DB.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
 		return fmt.Errorf("failed to get feed follows: %w", err)
 	}

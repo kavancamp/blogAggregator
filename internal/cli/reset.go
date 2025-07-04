@@ -9,8 +9,8 @@ func init() {
 	RegisterCommand("reset", resetHandler)
 }
 
-func resetHandler(state *State, cmd Command) error {
-	err := state.DB.DeleteAllUsers(context.Background())
+func resetHandler(s *State, cmd Command) error {
+	err := s.DB.DeleteAllUsers(context.Background())
 	if err != nil {
 		return fmt.Errorf("failed to delete users: %w", err)
 	}
