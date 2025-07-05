@@ -43,7 +43,7 @@ Follow an existing feed
 Start aggregating (fetching posts) by a set time 
 <pre>./gator agg 30s</pre>
 Browse recent posts - Shows recent posts from feeds you follow. Defaults to 2 posts if no limit is given.
-<pre>./gator browse LIMIT</pre>
+<pre>./gator browse LIMIT & (using "&" will allow you to use the same terminal, if ommitted browsing will need to be done in a different terminal while agg is running</pre>
 example: 
 <pre>./gator browse 10</pre>
 
