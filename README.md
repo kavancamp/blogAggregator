@@ -41,12 +41,15 @@ Add a new Feed <sub> auto follows feed, doesn't allow duplicate urls</sub>
 Follow an existing feed
 <pre>./gator follow FEED_URL </pre>
 Start aggregating (fetching posts) by a set time 
-<pre>./gator agg 30s</pre>
+<pre>./gator agg 30s &</pre>
 Browse recent posts - Shows recent posts from feeds you follow. Defaults to 2 posts if no limit is given.
-<pre>./gator browse LIMIT & (using "&" will allow you to use the same terminal, if ommitted browsing will need to be done in a different terminal while agg is running</pre>
+<pre>./gator browse LIMIT (using "&" will allow you to use the same terminal, if ommitted browsing will need to be done in a different terminal while agg is running</pre>
 example: 
 <pre>./gator browse 10</pre>
-
+To kill:
+<pre>
+Ctrl+c or kill %1
+</pre>
 ### 🧪 Sample RSS Feeds
 Here are some feeds to test with:
 TechCrunch
