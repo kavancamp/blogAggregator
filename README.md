@@ -1,5 +1,4 @@
 # 📰 Blog Aggregator
-** in progress **
 
 A command-line application built in Go that allows users to register, log in, and aggregate blog content from various sources. Designed as a backend-focused project to demonstrate database interaction, CLI command routing, and type-safe SQL with [`sqlc`](https://github.com/sqlc-dev/sqlc).
 
@@ -20,16 +19,15 @@ A command-line application built in Go that allows users to register, log in, an
 
 #### 1. Clone the repo
 
-```bash
 <pre>
 git clone https://github.com/kavancamp/blogAggregator
 cd blogAggregator
-</pre
+</pre>
 
 #### 2. Run Migrations
-<pre>
-goose -dir sql/migrations postgres "<YOUR_DB_URL>" up
-</pre>
+
+<pre>goose -dir sql/migrations postgres YOUR_DB_URL up</pre>
+Replace YOUR_DB_URL with your actual PostgreSQL connection string.
 
 #### 3. Generate SQL code
 <pre>
