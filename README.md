@@ -34,6 +34,8 @@ Delete all users **ONLY FOR TESTING PURPOSES**
 <pre>./gator reset</pre>
 Register a new user
 <pre>./gator register USERNAME <sub> Replace USERNAME with the actual users name</sub> </pre>
+Log in 
+<pre>./gator login USERNAME</pre>
 Add a new Feed <sub> auto follows feed, doesn't allow duplicate urls</sub> 
 <pre>./gator addfeed FEED_NAME FEED_URL </pre>
 Follow an existing feed
