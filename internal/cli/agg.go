@@ -1,9 +1,12 @@
 package cli
 
 import (
+	"github.com/google/uuid"
+	"database/sql"
 	"fmt"
 	"time"
 	"context"
+	"strings"
 	"log"
 	"github.com/kavancamp/blogAggregator/internal/database"
 	"github.com/kavancamp/blogAggregator/internal/feeds"
@@ -13,7 +16,7 @@ func init() {
 	RegisterCommand("agg", aggHandler)
 }
 
-func aggHandler(state *State, cmd Command) error {
+func aggHandler(s *State, cmd Command) error {
 	if len(cmd.Args) < 1 || len(cmd.Args) > 3  {
 		return fmt.Errorf("usage: gator agg <time_between_reqs> (e.g., 10s, 1m, 2h)")
 	}
@@ -27,12 +30,10 @@ func aggHandler(state *State, cmd Command) error {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
-	// run immediately once
-	scrapeFeeds(state)
-
 	// run every tick
-	for ; ; <-ticker.C {
-		scrapeFeeds(state)
+	for {
+		scrapeFeeds(s)
+		<-ticker.C
 	}
 }
 
@@ -61,7 +62,33 @@ func scrapeFeed(DB *database.Queries, feed database.Feed) {
 	}
 
 	for _, item := range parsedFeed.Channel.Item {
-		fmt.Printf("→ %s\n", item.Title)
+		pubTime := sql.NullTime{}
+		if t, err := time.Parse(time.RFC1123Z, item.PubDate); err == nil {
+			pubTime = sql.NullTime{
+				Time:  t,
+				Valid: true,
+			}
+		}
+		err := DB.CreatePost(context.Background(), database.CreatePostParams{
+			ID: uuid.New(),
+			CreatedAt: time.Now().UTC(),
+			UpdatedAt: time.Now().UTC(),
+			Title: item.Title,
+			Url: item.Link,
+			Description: sql.NullString{
+				String: item.Description,
+				Valid: true,
+			},
+			PublishedAt: pubTime,
+			FeedID: feed.ID,
+
+		})
+		if err != nil {
+			if !strings.Contains(err.Error(), "duplicate key") {
+				log.Printf("Error inserting post: %v", err)
+			}
+			continue
+		}
 	}
 	log.Printf("Feed %s collected, %v posts found", feed.Name, len(parsedFeed.Channel.Item))
 }
